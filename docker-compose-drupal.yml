@@ -1,0 +1,42 @@
+services:
+  drupal:
+    image: bitnami/drupal:latest
+    environment:
+      - DRUPAL_DATABASE_USER=LinuxSistem
+      - DRUPAL_DATABASE_PASSWORD=030415028
+      - DRUPAL_DATABASE_NAME=eksinav
+    volumes:
+      - drupal_data:/bitnami/drupal
+    ports:
+      - "8080:8080"
+
+  mariadb:   #işlem2
+    image: bitnami/mariadb:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=030415028
+      - MYSQL_USER=LinuxSistem
+      - MYSQL_PASSWORD=030415028
+      - MYSQL_DATABASE=eksinav
+    volumes:
+      - mariadb_data:/bitnami/mariadb
+
+  nginx:   #işlem3
+    image: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - nginx_conf:/etc/nginx/conf.d
+      - drupal_data:/bitnami/drupal
+
+  certbot:  #işlem4
+    image: certbot
+    command: certonly --webroot --webroot-path=/var/www/html --email firuze.erdemir@std.izu.edu.tr --agree-tos -d firuzesenaerdemir.com
+    volumes:
+      - /var/www/html
+    depends_on:
+      - nginx
+
+volumes:
+  drupal_data:
+  mariadb_data:
+  nginx_conf:
